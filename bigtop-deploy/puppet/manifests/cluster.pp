@@ -156,12 +156,12 @@ class hadoop_worker_node inherits hadoop_cluster_node {
         dirs => $mapred_data_dirs,
   }
 
-  solr::server { "solrcloud server":
-       collections => $solrcloud_collections,
-       port        => $solrcloud_port,
-       port_admin  => $solrcloud_port_admin,
-       zk          => $solrcloud_zk,
-  }
+  #solr::server { "solrcloud server":
+  #     collections => $solrcloud_collections,
+  #     port        => $solrcloud_port,
+  #     port_admin  => $solrcloud_port_admin,
+  #     zk          => $solrcloud_zk,
+  #}
 }
 
 class hadoop_head_node inherits hadoop_worker_node {
@@ -231,8 +231,8 @@ class hadoop_head_node inherits hadoop_worker_node {
 
   hadoop-sqoop::server { "sqoop server":
   }
-  hadoop-sqoop::client { "sqoop client":
-  }
+  #hadoop-sqoop::client { "sqoop client":
+  #}
 
   hcatalog::server { "hcatalog server":
         kerberos_realm => $kerberos_realm,

@@ -55,10 +55,9 @@ node default {
     $standby_head_node: {
       include standby_head_node
     }
-    default: {
-      include hadoop_worker_node
-    }
   }
+
+  include hadoop_worker_node
 
   if ($hadoop_gateway_node == $::fqdn) {
     include hadoop_gateway_node
