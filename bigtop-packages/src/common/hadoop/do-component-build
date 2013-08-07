@@ -21,23 +21,38 @@ if [ -z "$BUNDLE_SNAPPY" ] ; then
   [ -f /usr/lib64/libsnappy.so ] && BUNDLE_SNAPPY="-Dsnappy.prefix=x -Dbundle.snappy=true -Dsnappy.lib=/usr/lib64"
 fi
 
+function checkshl {
+  if ( find . | grep share/hadoop/client/lib$ >/dev/null ); then
+    echo "!!!! $1"
+    #exit -1
+  fi    
+}
+
 mkdir build
 mkdir build/src
+
+checkshl "Before building"
 
 # Build artifacts
 MAVEN_SKIP_TESTS="-DskipTests -DskipTest -DskipITs"
 mvn $ANT_OPTS $BUNDLE_SNAPPY -Pdist -Pnative -Pfuse -Psrc -Dtar ${MAVEN_SKIP_TESTS} install "$@"
+checkshl "After install"
 mvn site site:stage ${MAVEN_SKIP_TESTS} $@
+checkshl "After site"
 
 (cd build ; tar --strip-components=1 -xzvf  ../hadoop-dist/target/hadoop-${HADOOP_VERSION}.tar.gz)
+checkshl "After tar#1"
 (cd build/src ; tar --strip-components=1 -xzvf  ../../hadoop-dist/target/hadoop-${HADOOP_VERSION}-src.tar.gz)
+checkshl "After tar#2"
 
 # Copy generated docs
 mkdir -p build/share
 cp -r target/staging/hadoop-project build/share/doc
+checkshl "After cp -r"
 
 # Create a manifest for hadoop client package
 (cd hadoop-client/target/hadoop-client-*/share/hadoop/client/lib ; ls) > build/hadoop-client.list
+exit -1000
 
 # Copy fuse output to the build directory
 cp hadoop-hdfs-project/hadoop-hdfs/target/native/main/native/fuse-dfs/fuse_dfs build/bin/
